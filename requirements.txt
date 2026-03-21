@@ -1,0 +1,11 @@
+python-dotenv
+pandas
+numpy
+certifi
+scikit-learn
+dill
+pyaml
+mlflow
+boto3
+psycopg
+# -e .
