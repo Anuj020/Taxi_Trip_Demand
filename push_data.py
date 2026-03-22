@@ -1,7 +1,7 @@
 
 from taxidemand.logging.logger import logging
 from taxidemand.exception.exception import TaxiDemandException
-from taxidemand.entity.config_entity import TRAIN_FILE_NAME,TEST_FILE_NAME
+from taxidemand.constants.training_pipeline import TRAIN_FILE_PATH,TEST_FILE_PATH
 import psycopg
 from dotenv import load_dotenv
 import pandas as pd
@@ -40,7 +40,7 @@ class PostgreSQL():
             raise TaxiDemandException(e,sys)
 def main():
     db = PostgreSQL()
-    files = [TRAIN_FILE_NAME,TEST_FILE_NAME]
+    files = [TRAIN_FILE_PATH,TEST_FILE_PATH]
 
     for file in files:
         file_name = os.path.basename(file)

@@ -2,3 +2,5 @@ logs
 Taxi
 Taxi_data
 .env
+.DS_Store
+Artifacts

@@ -7,5 +7,5 @@ dill
 pyaml
 mlflow
 boto3
-psycopg
+psycopg2-binary
 # -e .
