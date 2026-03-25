@@ -49,3 +49,15 @@ class DataIngestionConfig:
         self.train_table_name: str = training_pipeline.DATA_INGESTION_TRAIN_TABLE_NAME
         self.test_table_name: str = training_pipeline.DATA_INGESTION_TEST_TABLE_NAME    
         
+
+
+class DataValidationConfig:
+    def __init__(self,training_pipeline_config: TrainingPipelineConfig):
+
+
+        self.data_ingestion_dir: str = os.path.join(
+            training_pipeline_config.artifact_dir, training_pipeline.VALIDATION_DIR
+        )
+        self.data_drift_config = os.path.join(
+            self.data_ingestion_dir, training_pipeline.DATA_VALIDATION_DRIFT_REPORT_FILE_NAME
+        )

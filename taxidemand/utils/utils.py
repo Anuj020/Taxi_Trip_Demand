@@ -11,7 +11,6 @@ def read_yaml(file_path:str) -> dict:
     try:
         with open(file_path,'rb') as yaml_files:
             return yaml.safe_load(yaml_files)
-            logging.info("Yaml file has been read successfully")
     except Exception as e:
         raise TaxiDemandException(e,sys)
     

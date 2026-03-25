@@ -19,7 +19,6 @@ VALIDATION_FILE_NAME: str = "validation.csv"
 RAW_TRAIN_DATA_PATH: str = 'raw_train.csv'
 RAW_TEST_DATA_PATH: str = 'raw_test.csv'
 
-SCHEMA_FILE_PATH = os.path.join("data_schema","schema.yaml")
 
 SAVED_MODEL_DIR =  os.path.join("saved_models")
 MODEL_FILE_NAME = "model.pkl"
@@ -38,3 +37,11 @@ DATA_INGESTION_INGESTED_DIR: str = 'ingested'
 DATA_INGESTION_RAW_DIR: str = 'raw_data'
 DATA_INGEATION_TRAIN_TEST_SPLIT_RATION: float = 0.2
 RANDOM_STATE: int = 42
+
+
+"""
+    Data Validation constants
+"""
+
+DATA_VALIDATION_DRIFT_REPORT_FILE_NAME: str = 'report.yaml'
+DRIFT_THRESHOLD: float = 0.05
