@@ -1,7 +1,7 @@
 from taxidemand.exception.exception import TaxiDemandException
 from taxidemand.logging.logger import logging
 from taxidemand.entity.artifact_entity import DataIngestionArtifact, DataValidationArtifact
-from taxidemand.entity.config_entity import DataIngestionConfig,DataValidationConfig
+from taxidemand.entity.config_entity import DataValidationConfig
 from taxidemand.constants.training_pipeline import TARGET_COLUMN,DRIFT_THRESHOLD
 from taxidemand.utils.utils import read_yaml, write_yaml_file
 import os
@@ -62,9 +62,3 @@ class DataValidation():
               return data_validation_drift
         except Exception as e:
              raise TaxiDemandException(e,sys) 
-
-"""
-Next steps:
-    Add data validation part in main.py
-    run main.py
-"""

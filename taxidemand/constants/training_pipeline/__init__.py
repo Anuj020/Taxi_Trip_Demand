@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
 load_dotenv()
+
+
 """
 defining common constant variable for training pipeline
 """
@@ -22,7 +24,7 @@ RAW_TEST_DATA_PATH: str = 'raw_test.csv'
 
 SAVED_MODEL_DIR =  os.path.join("saved_models")
 MODEL_FILE_NAME = "model.pkl"
-
+KMEAN_CLUSTER = "kmean"
 
 """
     Defining constants for data ingestion
@@ -45,3 +47,12 @@ RANDOM_STATE: int = 42
 
 DATA_VALIDATION_DRIFT_REPORT_FILE_NAME: str = 'report.yaml'
 DRIFT_THRESHOLD: float = 0.05
+
+
+"""
+    Data Transformation constants
+"""
+DATA_TRANSFORMATION_DIR_NAME: str = "data_transformation"
+DATA_TRANSFORMATION_TRANSFORMED_DIR_NAME: str = "transformed"
+DATA_TRANSFORMATION_TRANSFORMED_OBJECT: str = "transformed_object"
+PREPROCESSING_OBJECT_FILE_NAME: str = "preprocessing.pickel"
