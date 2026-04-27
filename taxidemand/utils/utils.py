@@ -1,6 +1,8 @@
 import yaml
 from taxidemand.logging.logger import logging
 from taxidemand.exception.exception import TaxiDemandException
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import r2_score
 import os,sys
 import math
 import pickle
@@ -48,8 +50,8 @@ def load_numpy_array_data(file_path: str) -> np.array:
         if not os.path.exists(file_path):
             raise Exception(f"The file:{file_path} is not exists")
         with open(file_path,"rb") as file_obj:
-            np.load(file_path)
             logging.info("numpy array is loaded")
+            return np.load(file_obj)
     except Exception as e:
         raise TaxiDemandException(e,sys)
     
@@ -73,7 +75,30 @@ def load_object(file_path:str) -> object:
     except Exception as e:
         raise TaxiDemandException(e,sys)
 
+# Evaluating Model
+def evaluate_model(X_train,y_train,X_test,y_test,models,param):
+    try:
+        report ={}
+        for model_name, model in models.items():
+            para = param.get(model_name,{})
+            gs = GridSearchCV(model,para,cv=3)
+            gs.fit(X_train,y_train)
+            best_model = gs.best_estimator_
 
+            y_test_pred = best_model.predict(X_test)
+            y_train_pred = best_model.predict(X_train)
+            
+            test_model_score = r2_score(y_test,y_test_pred)
+            train_model_score = r2_score(y_train,y_train_pred)
+            report[model_name] ={
+                "model":best_model,
+                "train_score": train_model_score,
+                "test_score": test_model_score,
+
+            }
+        return report
+    except Exception as e:
+        raise TaxiDemandException(e,sys)
 #Haversine Model
 def haversine(lat1,lat2,lon1,lon2, radius_of_earth = 6371):
     delta_lat = np.radians(lat2 - lat1)

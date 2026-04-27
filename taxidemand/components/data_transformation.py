@@ -55,6 +55,35 @@ class DataTransformation():
         except Exception as e:
             raise TaxiDemandException(e,sys)
 
+    def transformed_validation_data(self):
+        try:
+
+            kmean = utils.load_object(self.data_transformation_config.data_transformation_keman_path)
+            validation_df = pd.read_csv(self.data_ingestion_artifact.validation_file_path)
+
+            validation_df = utils.filter_passanger_count(validation_df)
+            validation_df = utils.encode_vendor(validation_df)
+            validation_df = validation_df.drop("id",axis=1)
+            validation_df = utils.add_datetime_features(validation_df)
+            validation_df = utils.remove_coordinate_outliers(validation_df)
+            validation_df['total_distance_km'] = utils.haversine(validation_df['pickup_latitude'],validation_df['dropoff_latitude'],validation_df['pickup_longitude'],validation_df['dropoff_longitude'])
+            validation_df['manhattan_distance'] = utils.manhattan_distance(validation_df['pickup_latitude'],validation_df['dropoff_latitude'],validation_df['pickup_longitude'],validation_df['dropoff_longitude'])
+            validation_df['bearing_direction'] = utils.bearing(validation_df['pickup_latitude'],validation_df['dropoff_latitude'],validation_df['pickup_longitude'],validation_df['dropoff_longitude'])
+            coords_pickup = validation_df[['pickup_latitude', 'pickup_longitude']]
+            coords_dropoff = validation_df[['dropoff_latitude', 'dropoff_longitude']]
+            validation_df['pickup_cluster'] = kmean.fit_predict(coords_pickup)
+            validation_df['dropoff_cluster'] = kmean.fit_predict(coords_dropoff)
+            validation_df['rush_hour'] = validation_df['pickup_hour'].isin([6,7,8,9,16,17,18,19,20]).astype(int)
+            validation_df['store_and_fwd_flag'] = validation_df['store_and_fwd_flag'].map({'Y':1, 'N':0})
+            validation_df_preprocessed = validation_df.drop(columns=[
+                        'pickup_datetime', 'dropoff_datetime',
+                        'pickup_latitude', 'pickup_longitude',
+                        'dropoff_latitude', 'dropoff_longitude',],errors='ignore')
+            return validation_df_preprocessed
+        except Exception as e:
+            raise TaxiDemandException(e,sys)
+
+
     def transformed_test_data(self):
         try:
 
@@ -105,20 +134,33 @@ class DataTransformation():
             target_feature_train_df = train_df[TARGET_COLUMN]
             target_feature_train_df = target_feature_train_df.replace(-1,0)
 
+            # Validation Dataframe
+            validation_df = self.transformed_validation_data()
+            input_feature_validation_df = validation_df.drop(columns=[TARGET_COLUMN], axis=1)
+            target_feature_validation_df = validation_df[TARGET_COLUMN]
+            target_feature_validation_df = target_feature_validation_df.replace(-1,0)
+
             ## Testing Dataframe
             test_df = self.transformed_test_data()
 
+            # Train fit_transform
             preprocessor = self.get_data_transformer_object(input_train_df)
             preprocessor_obj = preprocessor.fit(input_train_df)
             transformed_input_train_feature = preprocessor_obj.transform(input_train_df)
-            transformed_input_test_feature = preprocessor_obj.transform(test_df)
+
+            # Validation fit_transform
+            preprocessor_obj = preprocessor.fit(input_feature_validation_df)
+            transformed_input_validation_feature = preprocessor_obj.transform(input_feature_validation_df)
+            transformed_input_test_feature = preprocessor_obj.transform(input_feature_validation_df)
 
             # convert into array from dataframes
             train_arr = np.c_[transformed_input_train_feature, np.array(target_feature_train_df)]
+            validation_arr = np.c_[transformed_input_validation_feature, np.array(target_feature_validation_df)]
             test_arr = transformed_input_test_feature
 
             # save numpy array data
             utils.save_numpy_array_data(self.data_transformation_config.data_transformation_train_file_path,array=train_arr)
+            utils.save_numpy_array_data(self.data_transformation_config.validation_file_path,array=validation_arr)
             utils.save_numpy_array_data(self.data_transformation_config.data_transformation_test_file_path,array=test_arr)
             utils.save_object(self.data_transformation_config.data_transformation_object_file_path,preprocessor_obj)
 
@@ -126,6 +168,7 @@ class DataTransformation():
             data_transformation_artifact = DataTransformationArtifact(
                 transformd_object_file_path= self.data_transformation_config.data_transformation_object_file_path,
                 transformd_train_file_path= self.data_transformation_config.data_transformation_train_file_path,
+                transformd_validation_file_path = self.data_transformation_config.validation_file_path,
                 transformd_test_file_path= self.data_transformation_config.data_transformation_test_file_path
             )
             return data_transformation_artifact

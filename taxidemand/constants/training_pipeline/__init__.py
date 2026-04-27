@@ -56,3 +56,23 @@ DATA_TRANSFORMATION_DIR_NAME: str = "data_transformation"
 DATA_TRANSFORMATION_TRANSFORMED_DIR_NAME: str = "transformed"
 DATA_TRANSFORMATION_TRANSFORMED_OBJECT: str = "transformed_object"
 PREPROCESSING_OBJECT_FILE_NAME: str = "preprocessing.pickel"
+
+
+"""
+    Model Trainer 
+"""
+MODEL_TRAINER_DIR_NAME: str = "model_trainer"
+MODEL_TRAINER_FILE_PATH: str = "trained_model"
+MODEL_TRAINER_MODEL_NAME: str = "model.pkl"
+EXPECTED_ACCURACY: float = 0.7
+MODEL_TRAINER_OVERFITTING_UNDERFITTING_THRESHOLD: float = 0.05
+
+
+"""
+    XGBoost Parameters
+"""
+
+N_ESTIMATORS=1500,
+LEARNING_RATE=0.02,
+MAX_DEPTH=8,
+MIN_CHILD_WEIGHTS=[2]

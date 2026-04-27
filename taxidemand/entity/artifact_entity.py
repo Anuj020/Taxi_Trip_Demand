@@ -15,4 +15,13 @@ class DataValidationArtifact:
 class DataTransformationArtifact:
     transformd_train_file_path: str
     transformd_test_file_path: str
+    transformd_validation_file_path: str
     transformd_object_file_path: str
+
+
+    
+@dataclass
+class ModelTrainerArtifact:
+    trained_model_file_name: str
+    train_matric_artifact: float
+    test_matric_artifact: float
